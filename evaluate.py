@@ -1,5 +1,5 @@
 import fileinput
-from ari import something
+from adjusted_rand_index import rand_index
 
 def main():
   counter = 0
@@ -12,6 +12,9 @@ def main():
 
   for class_name in classes:
       print(class_name, classes[class_name])
+  
+  clusters = list(classes.keys())
+  rand_index(clusters)
 
 
 
