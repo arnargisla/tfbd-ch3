@@ -94,39 +94,16 @@ def main(argv):
             video_hash = create_video_hash(join(data_path, file_name))
             hash_video_list.append((video_hash, path.basename(file_name),))
 
+    eprint("Done hashing")
+
     hash_video_array = np.array([i[0] for i in hash_video_list])
     kmeans = KMeans(n_clusters=10).fit(hash_video_array)
-    print(kmeans.cluster_centers_)
-    print(kmeans.cluster_centers_.shape)
+    videos = [i[1] for i in hash_video_list]
 
-    eprint("Done hashing")
-    
-    hashes = list(hash_video_list)
-    clusters = []
-    counter = 0
-    while hashes:
-        if(counter % 100 == 0):
-            eprint("Clustering {}/{}".format(counter, total_number_of_items/10))
-        counter += 1
-
-        h, name = hashes.pop()
-        cluster = [(h, name)]
-        for _ in range(9):
-            if(hashes):
-                closest_item = find_closest_hash(h, hashes)
-                cluster.append(closest_item)
-                hashes.remove(closest_item)
-                
-        clusters.append(cluster)
+    for i in range(len(kmeans.labels_)):
+        print(kmeans.labels_[i], videos[i])
 
     eprint("Done clustering")
-
-    for i, cluster in enumerate(clusters):
-        for video_hash, file_name in cluster:
-            print(video_hash, i, file_name)
-
-    #for video_hash, file_name in hash_video_dict.items():
-
 
 if __name__ == "__main__":
     main(sys.argv)
