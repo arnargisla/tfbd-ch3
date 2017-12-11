@@ -57,6 +57,7 @@ def image_hash(image):
     pixels = [int((t[0] + t[1] + t[2])/len(t)) for t in list(resized_image.getdata())]
     adjacent_values_comparison_array = compare_adjacent(np.array(pixels).reshape(8,9))
 
-    boolean_vector = [e for sl in [list(i) for i in list(adjacent_values_comparison_array.astype(int))] for e in sl]
+    list(adjacent_values_comparison_array.astype(int).flatten())
+    boolean_vector = list(adjacent_values_comparison_array.astype(int).flatten())
     return boolean_vector
 
