@@ -12,6 +12,7 @@ import multiprocessing
 import cached_results
 from Levenshtein import distance
 import compare_strings
+from sklearn.cluster import KMeans
 
 def eprint(s):
     print(s, file=sys.stderr)
@@ -91,7 +92,11 @@ def main(argv):
 
         if isfile(join(data_path, file_name)):
             video_hash = create_video_hash(join(data_path, file_name))
-            hash_video_list.append((video_hash, path.basename(file_name),))
+            hash_video_list.append(video_hash)
+
+    hash_video_array = np.array(hash_video_list)
+    kmeans = KMeans(n_clusters=10).fit(hash_video_array)
+    print(kmeans.cluster_centers_)
 
     eprint("Done hashing")
     
