@@ -10,6 +10,10 @@ import numpy as np
 import config
 import multiprocessing
 import cached_results
+from Levenshtein import distance
+
+def eprint(s):
+    print(s, file=sys.stderr)
 
 def create_average_frame(video_clip):
     n_frames = 0
@@ -60,13 +64,60 @@ def init_image_cache():
     if not exists(config.image_path):
         makedirs(config.image_path)
 
+def find_closest_hash(h, hashes):
+    closest = list(hashes)[0]
+    smallest_d =  100
+    for h2, name in hashes:
+        d = distance(h, h2)
+        if d < smallest_d:
+            closest = (h2, name)
+            smallest_d = d
+
+    return closest
+
 def main(argv):
     init_image_cache()
     data_path = argv[1]
+    hash_video_dict = {}
+    total_number_of_items = len(listdir(data_path))
+    counter = 0
     for file_name in listdir(data_path):
+        if(counter % 100 == 0):
+            eprint("Hashing {}/{}".format(counter, total_number_of_items))
+        counter += 1
+
         if isfile(join(data_path, file_name)):
             video_hash = create_video_hash(join(data_path, file_name))
-            print(video_hash, (floor(random()*10) % 10), file_name)
+            hash_video_dict[video_hash] = path.basename(file_name)
+
+    eprint("Done hashing")
+    
+    hashes = set(hash_video_dict.items())
+    clusters = []
+    counter = 0
+    while hashes:
+        if(counter % 100 == 0):
+            eprint("Clustering {}/{}".format(counter, total_number_of_items/10))
+        counter += 1
+
+        h, name = hashes.pop()
+        cluster = [(h, name)]
+        for _ in range(10):
+            if(hashes):
+                closest_item = find_closest_hash(h, hashes)
+                cluster.append(closest_item)
+                hashes.remove(closest_item)
+                
+        clusters.append(cluster)
+
+    eprint("Done clustering")
+
+    for cluster in clusters:
+        for video_hash, file_name in cluster:
+            print(video_hash, file_name)
+
+    #for video_hash, file_name in hash_video_dict.items():
+
 
 if __name__ == "__main__":
     main(sys.argv)
