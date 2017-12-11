@@ -11,9 +11,11 @@ import config
 import multiprocessing
 import cached_results
 from Levenshtein import distance
+import compare_strings
 
 def eprint(s):
     print(s, file=sys.stderr)
+
 
 def create_average_frame(video_clip):
     n_frames = 0
@@ -68,7 +70,7 @@ def find_closest_hash(h, hashes):
     closest = list(hashes)[0]
     smallest_d =  100
     for h2, name in hashes:
-        d = distance(h, h2)
+        d = compare_strings.compare(h, h2)
         if d < smallest_d:
             closest = (h2, name)
             smallest_d = d
@@ -78,9 +80,10 @@ def find_closest_hash(h, hashes):
 def main(argv):
     init_image_cache()
     data_path = argv[1]
-    hash_video_dict = {}
+    hash_video_list = []
     total_number_of_items = len(listdir(data_path))
     counter = 0
+
     for file_name in listdir(data_path):
         if(counter % 100 == 0):
             eprint("Hashing {}/{}".format(counter, total_number_of_items))
@@ -88,11 +91,11 @@ def main(argv):
 
         if isfile(join(data_path, file_name)):
             video_hash = create_video_hash(join(data_path, file_name))
-            hash_video_dict[video_hash] = path.basename(file_name)
+            hash_video_list.append((video_hash, path.basename(file_name),))
 
     eprint("Done hashing")
     
-    hashes = set(hash_video_dict.items())
+    hashes = list(hash_video_list)
     clusters = []
     counter = 0
     while hashes:
@@ -102,7 +105,7 @@ def main(argv):
 
         h, name = hashes.pop()
         cluster = [(h, name)]
-        for _ in range(10):
+        for _ in range(9):
             if(hashes):
                 closest_item = find_closest_hash(h, hashes)
                 cluster.append(closest_item)
@@ -112,9 +115,9 @@ def main(argv):
 
     eprint("Done clustering")
 
-    for cluster in clusters:
+    for i, cluster in enumerate(clusters):
         for video_hash, file_name in cluster:
-            print(video_hash, file_name)
+            print(video_hash, i, file_name)
 
     #for video_hash, file_name in hash_video_dict.items():
 

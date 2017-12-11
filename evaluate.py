@@ -10,8 +10,9 @@ def main():
       classes[class_name] = set()
     classes[class_name].add(observation_name)
 
+
   for class_name in classes:
-      pass #print(class_name, classes[class_name])
+      print(class_name, classes[class_name])
   
   clusters = list(classes.values())
   for cluster in clusters:
