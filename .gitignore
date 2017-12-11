@@ -3,3 +3,5 @@ videos-test
 videos.zip
 *.swp
 __pycache__
+images
+obj
