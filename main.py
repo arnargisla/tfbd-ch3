@@ -92,11 +92,12 @@ def main(argv):
 
         if isfile(join(data_path, file_name)):
             video_hash = create_video_hash(join(data_path, file_name))
-            hash_video_list.append(video_hash)
+            hash_video_list.append((video_hash, path.basename(file_name),))
 
-    hash_video_array = np.array(hash_video_list)
+    hash_video_array = np.array([i[0] for i in hash_video_list])
     kmeans = KMeans(n_clusters=10).fit(hash_video_array)
     print(kmeans.cluster_centers_)
+    print(kmeans.cluster_centers_.shape)
 
     eprint("Done hashing")
     
