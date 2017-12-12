@@ -88,6 +88,8 @@ def main(argv):
     for file_name in listdir(data_path):
         if(counter % 100 == 0):
             eprint("Hashing {}/{}".format(counter, total_number_of_items))
+        if(counter % 1000 == 0):
+            cached_results.save()
         counter += 1
 
         if isfile(join(data_path, file_name)):

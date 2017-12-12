@@ -45,7 +45,7 @@ def hash_function(differences):
     
     return outer_hex_string
 
-def image_hash(image):
+def image_hash_old(image):
 
     #Grayscale the image
     grayscale_image = convert_to_grayscale(image)
@@ -57,7 +57,36 @@ def image_hash(image):
     pixels = [int((t[0] + t[1] + t[2])/len(t)) for t in list(resized_image.getdata())]
     adjacent_values_comparison_array = compare_adjacent(np.array(pixels).reshape(8,9))
 
-    list(adjacent_values_comparison_array.astype(int).flatten())
+    #list(adjacent_values_comparison_array.astype(int).flatten())
     boolean_vector = list(adjacent_values_comparison_array.astype(int).flatten())
     return boolean_vector
+
+def image_hash(image):
+
+    #Grayscale the image
+    grayscale_image = image.convert("L")
+
+    #Resize to fx. 9 x 8 pixels
+    resized_image = grayscale_image.resize((9,8))
+
+    #Compare adjacent values (x > y)
+    pixels = list(resized_image.getdata())
+    adjacent_values_comparison_array = compare_adjacent(np.array(pixels).reshape(8,9))
+
+    #list(adjacent_values_comparison_array.astype(int).flatten())
+    boolean_vector = list(adjacent_values_comparison_array.astype(int).flatten())
+    return boolean_vector
+
+if __name__ == "__main__":
+    image = Image.open("images/C2L0XK8FTM9C.jpg")
+    for _ in range(50):
+        hash1 = (image_hash(image))
+    print("done1")
+    #for _ in range(50):
+        #hash2 = (image_hash2(image))
+    print("done2")
+    #print("".join([str(i) for i in hash1]))
+    #print("".join([str(i) for i in hash2]))
+    #print(hash1==hash2)
+
 

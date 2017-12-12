@@ -18,6 +18,8 @@ def load_obj(name):
 
 def add_hash(key, hash_string):
     hashes[key] = hash_string
+
+def save():
     save_obj(hashes, "cached_hashes")
 
 def reset_cache():
